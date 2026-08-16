@@ -7,7 +7,7 @@ from fastapi import FastAPI
 app = FastAPI()
 
 #-----------------------------------
-# Stage 1: root and health endpoint
+# Stage 1: root and health endpoints
 #-----------------------------------
 
 # Returns metadata about our API (name, version, available endpoints)
