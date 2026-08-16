@@ -38,7 +38,7 @@ tasks_db = [
 #-----------------------------------
 
 # Returns metadata about our API (name, version, available endpoints)
-@app.get("/")
+@app.get("/", summary="Root endpoint returning API details")
 def read_root():
     return {
         "name": "Task API",
@@ -47,7 +47,7 @@ def read_root():
     }
 
 # Used by monitoring systems and cloud platforms to verify the server is running
-@app.get("/health")
+@app.get("/health", summary="Health check endpoint")
 def health_check():
     return {"status": "ok"}
 
@@ -56,13 +56,13 @@ def health_check():
 #-----------------------------------
 
 # Returns the list of all tasks stored in tasks_db.
-@app.get("/tasks")
+@app.get("/tasks", summary="List all tasks")
 def get_tasks():
     return tasks_db
 
 # Searches tasks_db for a task matching task id
 # FastAPI maps {id} in the route decorator directly to the function parameter 'id: int'.
-@app.get("/tasks/{id}")
+@app.get("/tasks/{id}", summary="Get a single task by ID")
 def get_task(id: int):
     # Loop through each dictionary inside tasks_db
     for task in tasks_db:
@@ -86,7 +86,7 @@ class TaskCreate(BaseModel):
     completed: bool = False # becz when creating a task it is False
 
 # status_code=status.HTTP_201_CREATED tells FastAPI to return HTTP 201 when creation succeeds
-@app.post("/tasks", status_code=status.HTTP_201_CREATED)
+@app.post("/tasks", status_code=status.HTTP_201_CREATED, summary="Create a new task")
 def create_task(task_input: TaskCreate):
     if not task_input.title or task_input.title.strip() == "":
         return JSONResponse(
@@ -120,7 +120,7 @@ class TaskUpdate(BaseModel):
 
 
 # PUT /tasks/{id} - Update an existing task
-@app.put("/tasks/{id}")
+@app.put("/tasks/{id}", summary="Update an existing task")
 def update_task(id: int, task_input: TaskUpdate):
     if not task_input.title or task_input.title.strip() == "":
         return JSONResponse(
@@ -141,7 +141,7 @@ def update_task(id: int, task_input: TaskUpdate):
 
 
 # DELETE /tasks/{id} - Delete a task
-@app.delete("/tasks/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/tasks/{id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete a task by ID")
 def delete_task(id: int):
     # Loop through list and remove the task matching the ID
     for index, task in enumerate(tasks_db):
@@ -152,3 +152,10 @@ def delete_task(id: int):
     return JSONResponse(
         status_code=404, content={"error": f"Task {id} not found"}
     )
+
+# -----------------------------------
+# Stage 5: Swagger UI
+# -----------------------------------
+
+# done
+# summary added and ui tested 
