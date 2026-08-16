@@ -6,10 +6,20 @@ from fastapi import FastAPI
 # Creating the main server application. All endpoints will attach to 'app'.
 app = FastAPI()
 
+#-----------------------------------
+# Stage 1: root and health endpoint
+#-----------------------------------
 
-# Setting up a listener for GET requests sent to the home path ("/").
-# When a user visits "http://localhost:8000/", FastAPI runs the function below.
+# Returns metadata about our API (name, version, available endpoints)
 @app.get("/")
 def read_root():
-    # Returns a Python dictionary. FastAPI automatically turns this into JSON text.
-    return {"message": "Hello World"}
+    return {
+        "name": "Task API",
+        "version": "1.0",
+        "endpoints": ["/tasks"],
+    }
+
+# Used by monitoring systems and cloud platforms to verify the server is running
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
