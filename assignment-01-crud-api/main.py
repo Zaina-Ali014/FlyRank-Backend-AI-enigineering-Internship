@@ -107,3 +107,48 @@ def create_task(task_input: TaskCreate):
 
     # Return the created task dictionary
     return new_task
+
+# -----------------------------------
+# Stage 4: full CRUD
+# -----------------------------------
+
+# Pydantic schema for updating a task
+class TaskUpdate(BaseModel):
+    title: str = ""
+    description: str = ""
+    completed: bool = False
+
+
+# PUT /tasks/{id} - Update an existing task
+@app.put("/tasks/{id}")
+def update_task(id: int, task_input: TaskUpdate):
+    if not task_input.title or task_input.title.strip() == "":
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Title is required and cannot be empty"},
+        )
+
+    for task in tasks_db:
+        if task["id"] == id:
+            task["title"] = task_input.title
+            task["description"] = task_input.description
+            task["completed"] = task_input.completed
+            return task  # Default HTTP status code is 200 OK
+
+    return JSONResponse(
+        status_code=404, content={"error": f"Task {id} not found"}
+    )
+
+
+# DELETE /tasks/{id} - Delete a task
+@app.delete("/tasks/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_task(id: int):
+    # Loop through list and remove the task matching the ID
+    for index, task in enumerate(tasks_db):
+        if task["id"] == id:
+            tasks_db.pop(index)
+            return  # Returns 204 No Content with empty body
+
+    return JSONResponse(
+        status_code=404, content={"error": f"Task {id} not found"}
+    )
